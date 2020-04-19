@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"reflect"
 
 	"github.com/getsentry/sentry-go"
@@ -23,10 +22,18 @@ func init() {
 }
 
 func main() {
+	var poller tb.Poller
+	if conf.AppEnv == "production" {
+		poller = &tb.Webhook{
+			Listen:   conf.WebHookPort,
+			Endpoint: &tb.WebhookEndpoint{PublicURL: conf.WebHookEndpoint},
+		}
+	} else {
+		poller = &tb.LongPoller{}
+	}
 	b, err := tb.NewBot(tb.Settings{
-		Token: conf.BotToken,
-		//URL:    "http://195.129.111.17:8012",
-		Poller: &tb.LongPoller{},
+		Token:  conf.BotToken,
+		Poller: poller,
 		Reporter: func(err error) {
 			if err.Error() == tb.ErrCouldNotUpdate.Error() {
 				return
@@ -42,19 +49,16 @@ func main() {
 	}
 
 	b.Handle("/start", func(m *tb.Message) {
-		b.Reply(m, "hi")
+		b.Send(m.Sender, "hi")
 	})
 
 	b.Handle("/help", func(m *tb.Message) {
-		b.Reply(m, "may I help U?")
+		b.Send(m.Sender, "将即刻App内的消息链接发送给我，我就能将其解析成 Telegram 消息回复给您。")
 	})
 
 	b.Handle(tb.OnText, func(m *tb.Message) {
-		fmt.Println(m.Text)
-		log.Printf("receive msg: %s", m.Text)
 		urls := xurls.Strict().FindAllString(m.Text, -1)
 		for _, url := range urls {
-			log.Println(url)
 			jikeUrl := jike.ParseUrl(url)
 			if jikeUrl == nil {
 				continue
