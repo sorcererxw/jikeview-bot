@@ -3,9 +3,10 @@ package jike
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"time"
+
+	"github.com/sorcererxw/jikeview-bot/util/log"
 )
 
 const (

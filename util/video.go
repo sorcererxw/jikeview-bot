@@ -220,8 +220,7 @@ func DownloadAndFormatVideo(url string) (string, error) {
 		"-bsf:a", "aac_adtstoasc",
 		outputFile,
 	)
-	out, err := cmd.CombinedOutput()
-	fmt.Printf("combined out:\n%s\n", string(out))
+	_, err := cmd.CombinedOutput()
 	if err != nil {
 		return "", err
 	}
