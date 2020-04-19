@@ -32,9 +32,8 @@ jobs:
       - name: Build
         run: make build
 
-      - name: Build Docker
-        run: |
-          git_hash=$(git rev-parse --short "$GITHUB_SHA")
-          image_name=docker.pkg.github.com/sorcererxw/jikeview-bot/jikeview-bot:${git_hash}
-          docker build -t ${image_name} .
-          docker push ${image_name}
+      - name: Build and Push Docker Image
+        uses: mattdavis0351/actions/docker-gpr@v1
+          with:
+            repo-token: ${{ secrets.GITHUB_TOKEN }}
+            image-name: jikeview-bot
