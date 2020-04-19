@@ -34,6 +34,6 @@ jobs:
 
       - name: Build and Push Docker Image
         uses: mattdavis0351/actions/docker-gpr@v1
-          with:
-            repo-token: ${{ secrets.GITHUB_TOKEN }}
-            image-name: jikeview-bot
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          image-name: jikeview-bot
