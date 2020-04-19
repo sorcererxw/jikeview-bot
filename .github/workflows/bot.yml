@@ -32,6 +32,9 @@ jobs:
       - name: Build
         run: make build
 
+      - name: ls
+        run: ls
+
       - name: Build and Push Docker Image
         uses: mattdavis0351/actions/docker-gpr@v1
         with:
