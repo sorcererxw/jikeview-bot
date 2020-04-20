@@ -30,13 +30,13 @@ jobs:
           fi
 
       - name: Build
-        run: make build
-
-      - name: ls
-        run: ls
+        run: go build -o build/jikeview-bot cmd/bot/*.go
 
       - name: Build and Push Docker Image
         uses: mattdavis0351/actions/docker-gpr@v1
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           image-name: jikeview-bot
+
+      - name: ls
+        run: ls

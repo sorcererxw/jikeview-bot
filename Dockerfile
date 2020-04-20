@@ -5,4 +5,5 @@ RUN apk upgrade -U \
  && rm -rf /var/cache/*
 
 COPY build ./
+RUN ls
 CMD ./jikeview-bot
