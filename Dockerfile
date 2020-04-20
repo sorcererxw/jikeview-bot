@@ -6,4 +6,3 @@ RUN apk upgrade -U \
 
 COPY build ./
 RUN ls
-CMD ./jikeview-bot
