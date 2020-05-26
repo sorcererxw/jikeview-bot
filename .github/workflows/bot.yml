@@ -29,9 +29,6 @@ jobs:
               dep ensure
           fi
 
-      - name: Test
-        run: make test
-
       - name: Build and Push Docker Image
         uses: mattdavis0351/actions/docker-gpr@v1
         with:
