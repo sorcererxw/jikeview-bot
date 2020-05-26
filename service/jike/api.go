@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	baseUrl = "https://api-majia.jellow.club/1.0"
+	baseUrl = "https://api-prod.jellow.club/1.0"
 )
 
 var (

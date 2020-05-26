@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"reflect"
 
 	"github.com/getsentry/sentry-go"
@@ -18,6 +19,22 @@ func init() {
 	})
 	if err != nil {
 		log.Fatal(err)
+	}
+}
+
+func SendSendable(b *tb.Bot, m *tb.Message, sendable interface{}) error {
+	rt := reflect.TypeOf(sendable)
+	switch rt.Kind() {
+	case reflect.Array, reflect.Slice:
+		_, err := b.SendAlbum(m.Sender, sendable.([]tb.InputMedia), &tb.SendOptions{
+			ParseMode: tb.ModeHTML,
+		})
+		return err
+	default:
+		_, err := b.Send(m.Sender, sendable, &tb.SendOptions{
+			ParseMode: tb.ModeHTML,
+		})
+		return err
 	}
 }
 
@@ -73,22 +90,10 @@ func main() {
 				log.Error(err)
 				return
 			}
-			rt := reflect.TypeOf(sendable)
-			switch rt.Kind() {
-			case reflect.Array, reflect.Slice:
-				_, err := b.SendAlbum(m.Sender, sendable.([]tb.InputMedia), &tb.SendOptions{
-					ParseMode: tb.ModeHTML,
-				})
-				if err != nil {
-					log.Error(err)
-				}
-			default:
-				_, err := b.Send(m.Sender, sendable, &tb.SendOptions{
-					ParseMode: tb.ModeHTML,
-				})
-				if err != nil {
-					log.Error(err)
-				}
+			err = SendSendable(b, m, sendable)
+			switch err {
+			case tb.ErrTooLarge:
+				b.Send(m.Sender, fmt.Sprintf("%s 内文件过大，无法通过 Telegram 发送", url))
 			}
 		}
 	})

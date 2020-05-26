@@ -1,8 +1,15 @@
-FROM alpine:3
+FROM golang as build
+
+WORKDIR /app
+COPY ./ ./
+RUN make build
+
+FROM alpine
 
 RUN apk upgrade -U \
- && apk add ca-certificates ffmpeg libva-intel-driver \
+ && apk --no-cache add ca-certificates ffmpeg libva-intel-driver \
  && rm -rf /var/cache/*
 
-COPY build ./
-RUN ls
+COPY --from=build /app/bin ./
+ENTRYPOINT ["sh", "-c"]
+CMD ["./bot"]
