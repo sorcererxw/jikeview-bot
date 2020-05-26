@@ -3,6 +3,8 @@ package jike
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/sorcererxw/jikeview-bot/util"
 )
 
@@ -22,21 +24,11 @@ func TestGetPost(t *testing.T) {
 	}
 }
 
-func TestGetMediaMeta(t *testing.T) {
+func TestGetDeletedPost(t *testing.T) {
 	url := "https://m.jellow.club/originalPosts/5e9a9247266e310018cb3251"
 	parsedUrl := ParseUrl(url)
-	post, err := GetPost(parsedUrl)
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Log(post.GetVideo().Type)
-	meta, err := GetMediaMeta(post.GetUrl())
-	if err != nil {
-		t.Fatal(err)
-	}
-	if meta.Url == "" {
-		t.Fatal(meta)
-	}
+	post, _ := GetPost(parsedUrl)
+	assert.Nil(t, post)
 }
 
 func TestDownloadAndFormatVideo(t *testing.T) {

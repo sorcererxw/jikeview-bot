@@ -2,6 +2,7 @@ package jike
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -72,7 +73,9 @@ type (
 	}
 
 	Post struct {
-		Data struct {
+		Success *bool  `json:"success"`
+		Error   string `json:"error"`
+		Data    struct {
 			ID          string        `json:"id"`
 			Type        RawPostType   `json:"type"`
 			Content     string        `json:"content"`
@@ -104,6 +107,7 @@ func GetPost(url *Url) (*Post, error) {
 	case OriginalPost:
 		tp = "originalPosts"
 	}
+	log.Infof("GetPost %+v", url)
 	req, err := http.NewRequest("GET", baseUrl+"/"+tp+"/get", nil)
 	if err != nil {
 		return nil, err
@@ -111,6 +115,7 @@ func GetPost(url *Url) (*Post, error) {
 	qs := req.URL.Query()
 	qs.Add("id", url.ID)
 	req.URL.RawQuery = qs.Encode()
+	log.Info(req.URL.String())
 	res, err := httpClient.Do(req)
 	if err != nil {
 		return nil, err
@@ -128,6 +133,9 @@ func GetPost(url *Url) (*Post, error) {
 	var resp Post
 	if err = json.Unmarshal(bodyBytes, &resp); err != nil {
 		return nil, err
+	}
+	if resp.Success != nil && *resp.Success == false {
+		return nil, fmt.Errorf(resp.Error)
 	}
 	return &resp, nil
 }
