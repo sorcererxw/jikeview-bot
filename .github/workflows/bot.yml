@@ -33,8 +33,10 @@ jobs:
         run: |
           sudo apt-get install ffmpeg
 
-      - name: Test
-        run: make test
+      - name: Test & Build
+        run: |
+          make test
+          make build
 
       - name: Build and Push Docker Image
         uses: mattdavis0351/actions/docker-gpr@v1

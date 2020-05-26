@@ -32,21 +32,14 @@ func TestGetDeletedPost(t *testing.T) {
 }
 
 func TestDownloadAndFormatVideo(t *testing.T) {
+	t.Skip("skip TestDownloadAndFormatVideo")
 	url := "https://m.jellow.club/originalPosts/5e9aa689ae00f00018fc586e?username=86cdd8bd-b8fc-472d-9240-f28358749211"
 	parsedUrl := ParseUrl(url)
 	post, err := GetPost(parsedUrl)
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Log(post.GetVideo().Type)
+	assert.Nil(t, err)
 	meta, err := GetMediaMeta(post.GetUrl())
-	t.Log(meta)
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
 	videoFile, err := util.DownloadAndFormatVideo(meta.Url)
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.Nil(t, err)
 	t.Log(videoFile)
 }
