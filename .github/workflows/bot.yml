@@ -31,7 +31,7 @@ jobs:
 
       - name: Install runtime dependency
         run: |
-          apt update && apt install ffmpeg
+          sudo apt-get install ffmpeg
 
       - name: Test
         run: make test
