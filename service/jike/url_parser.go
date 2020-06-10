@@ -32,10 +32,10 @@ func ParseUrl(url string) *Url {
 
 func (u *Url) GenerateMessageUrl() string {
 	if u.Type == OfficialMessage {
-		return "https://web.jellow.club/message-detail/" + u.ID + "/officialMessage"
+		return "https://m.okjike.com/officialMessages" + u.ID
 	}
 	if u.Type == OriginalPost {
-		return "https://web.jellow.club/post-detail/" + u.ID + "/originalPost"
+		return "https://m.okjike.com/originalPosts/" + u.ID
 	}
 	return ""
 }
