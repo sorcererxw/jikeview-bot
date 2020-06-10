@@ -40,12 +40,15 @@ func SendSendable(b *tb.Bot, m *tb.Message, sendable interface{}) error {
 
 func main() {
 	var poller tb.Poller
+	var removeWebhook bool
 	if conf.AppEnv == "production" {
+		removeWebhook = false
 		poller = &tb.Webhook{
 			Listen:   conf.WebHookPort,
 			Endpoint: &tb.WebhookEndpoint{PublicURL: conf.WebHookEndpoint},
 		}
 	} else {
+		removeWebhook = true
 		poller = &tb.LongPoller{}
 	}
 	b, err := tb.NewBot(tb.Settings{
@@ -63,6 +66,12 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 		return
+	}
+	if removeWebhook {
+		err := b.RemoveWebhook()
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	b.Handle("/start", func(m *tb.Message) {
@@ -97,6 +106,5 @@ func main() {
 			}
 		}
 	})
-
 	b.Start()
 }

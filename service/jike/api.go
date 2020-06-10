@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	baseUrl = "https://api-prod.jellow.club/1.0"
+	baseUrl = "https://api.ruguoapp.com/1.0"
 )
 
 var (
