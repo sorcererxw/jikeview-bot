@@ -11,6 +11,13 @@ import (
 	"github.com/sorcererxw/jikeview-bot/util/log"
 )
 
+const MaxCharacterLength = 4096 // max character count in one telegram message
+const MaxCaptionLength = 1024
+
+func (p Post) hasMedia() bool {
+	return p.GetVideo() != nil || p.GetAudio() != nil || len(p.Data.Pictures) > 0
+}
+
 // ConvertToTelegramPost convert jike post to telebot sendable
 func (p *Post) ConvertToTelegramPost() (interface{}, error) {
 	text := ""
@@ -18,9 +25,17 @@ func (p *Post) ConvertToTelegramPost() (interface{}, error) {
 		text += "#" + util.RemoveAllSpaceAndPunctuation(p.Data.Topic.Content) + "\n"
 	}
 	if p.Data.Content != "" {
-		text += "\n" + p.Data.Content
+		content := p.Data.Content
+		limit := MaxCharacterLength - 100
+		if p.hasMedia() {
+			limit = MaxCaptionLength - 100
+		}
+		if len(content) > limit {
+			content = content[:limit] + "......"
+		}
+		text += "\n" + content
 	}
-	text += fmt.Sprintf("\n<a href='%s'>查看原文</a>", p.GetUrl().GenerateMessageUrl())
+	text += fmt.Sprintf("\n\n<a href='%s'>查看全文</a>", p.GetUrl().GenerateMessageUrl())
 	// video mode
 	if p.GetVideo() != nil {
 		video := p.GetVideo()
