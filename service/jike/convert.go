@@ -24,14 +24,15 @@ func (p *Post) ConvertToTelegramPost() (interface{}, error) {
 	if p.Data.Topic != nil {
 		text += "#" + util.RemoveAllSpaceAndPunctuation(p.Data.Topic.Content) + "\n"
 	}
+
 	if p.Data.Content != "" {
-		content := p.Data.Content
+		content := fmt.Sprintf("<b>@%s:</b> %s", p.Data.User.ScreenName, p.Data.Content)
 		limit := MaxCharacterLength - 100
 		if p.hasMedia() {
 			limit = MaxCaptionLength - 100
 		}
-		if len(content) > limit {
-			content = content[:limit] + "......"
+		if len([]rune(content)) > limit {
+			content = string([]rune(content)[:limit]) + "......"
 		}
 		text += "\n" + content
 	}

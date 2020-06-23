@@ -72,6 +72,11 @@ type (
 		Video      *Video `json:"video"`
 	}
 
+	UserInfo struct {
+		ID         string `json:"id"`
+		ScreenName string `json:"screenName"`
+	}
+
 	Post struct {
 		Success *bool  `json:"success"`
 		Error   string `json:"error"`
@@ -90,6 +95,7 @@ type (
 			Video       *Video        `json:"video"`
 			Audio       *Audio        `json:"audio"`
 			LinkInfo    *LinkInfo     `json:"linkInfo"`
+			User        *UserInfo     `json:"user"`
 		} `json:"data"`
 	}
 
