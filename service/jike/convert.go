@@ -26,7 +26,10 @@ func (p *Post) ConvertToTelegramPost() (interface{}, error) {
 	}
 
 	if p.Data.Content != "" {
-		content := fmt.Sprintf("<b>@%s:</b> %s", p.Data.User.ScreenName, p.Data.Content)
+		content := p.Data.Content
+		if len(content) > 0 {
+			content = fmt.Sprintf("<b>@%s:</b> %s", p.Data.User.ScreenName, p.Data.Content)
+		}
 		limit := MaxCharacterLength - 100
 		if p.hasMedia() {
 			limit = MaxCaptionLength - 100
