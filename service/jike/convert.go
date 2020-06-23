@@ -38,8 +38,11 @@ func (p *Post) ConvertToTelegramPost() (interface{}, error) {
 			content = string([]rune(content)[:limit]) + "......"
 		}
 		text += "\n" + content
+		if len(content) > 0 {
+			text = text + "\n"
+		}
 	}
-	text += fmt.Sprintf("\n\n<a href='%s'>查看全文</a>", p.GetUrl().GenerateMessageUrl())
+	text += fmt.Sprintf("\n<a href='%s'>查看全文</a>", p.GetUrl().GenerateMessageUrl())
 	// video mode
 	if p.GetVideo() != nil {
 		video := p.GetVideo()
