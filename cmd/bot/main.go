@@ -103,6 +103,9 @@ func main() {
 			switch err {
 			case tb.ErrTooLarge:
 				b.Send(m.Sender, fmt.Sprintf("%s 内文件过大，无法通过 Telegram 发送", url))
+			default:
+				b.Send(m.Sender, fmt.Sprintf("发送失败: %s", err.Error()))
+				log.Error(err)
 			}
 		}
 	})
