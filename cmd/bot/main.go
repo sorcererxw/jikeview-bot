@@ -10,6 +10,7 @@ import (
 
 	"github.com/sorcererxw/jikeview-bot/conf"
 	"github.com/sorcererxw/jikeview-bot/service/jike"
+	"github.com/sorcererxw/jikeview-bot/service/jstore"
 	"github.com/sorcererxw/jikeview-bot/util/log"
 )
 
@@ -36,6 +37,23 @@ func SendSendable(b *tb.Bot, m *tb.Message, sendable interface{}) error {
 		})
 		return err
 	}
+}
+
+func ConvertToSendable(url string) (interface{}, error) {
+	converters := []func(u string) (interface{}, error){
+		jike.TryToConvertTelegramPost,
+		jstore.TryToConvertToTelegramPost,
+	}
+	for _, cvt := range converters {
+		sendable, err := cvt(url)
+		if err != nil {
+			return nil, err
+		}
+		if sendable != nil {
+			return sendable, nil
+		}
+	}
+	return nil, nil
 }
 
 func main() {
@@ -75,29 +93,23 @@ func main() {
 	}
 
 	b.Handle("/start", func(m *tb.Message) {
-		b.Send(m.Sender, "hi")
+		b.Send(m.Sender, "hi\n\n使用帮助: /help")
 	})
 
 	b.Handle("/help", func(m *tb.Message) {
-		b.Send(m.Sender, "将即刻App内的消息链接发送给我，我就能将其解析成 Telegram 消息回复给您。")
+		SendSendable(b, m, "将<b>即刻/即士多</b>内的消息链接发送给我，我就能将其解析成 Telegram 消息回复给您。")
 	})
 
 	b.Handle(tb.OnText, func(m *tb.Message) {
 		urls := xurls.Strict().FindAllString(m.Text, -1)
 		for _, url := range urls {
-			jikeUrl := jike.ParseUrl(url)
-			if jikeUrl == nil {
+			sendable, err := ConvertToSendable(url)
+			if err != nil {
+				log.Println(err)
 				continue
 			}
-			jikePost, err := jike.GetPost(jikeUrl)
-			if err != nil {
-				log.Error(err)
-				return
-			}
-			sendable, err := jikePost.ConvertToTelegramPost()
-			if err != nil {
-				log.Error(err)
-				return
+			if sendable == nil {
+				continue
 			}
 			err = SendSendable(b, m, sendable)
 			switch err {

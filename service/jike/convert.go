@@ -138,3 +138,19 @@ func (p *Post) ConvertToTelegramPost() (interface{}, error) {
 	// text mode
 	return text, nil
 }
+
+func TryToConvertTelegramPost(url string) (interface{}, error) {
+	jikeUrl := ParseUrl(url)
+	if jikeUrl == nil {
+		return nil, nil
+	}
+	jikePost, err := GetPost(jikeUrl)
+	if err != nil {
+		return nil, err
+	}
+	sendable, err := jikePost.ConvertToTelegramPost()
+	if err != nil {
+		return nil, err
+	}
+	return sendable, nil
+}

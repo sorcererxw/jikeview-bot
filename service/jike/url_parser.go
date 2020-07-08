@@ -32,7 +32,7 @@ func ParseUrl(url string) *Url {
 
 func (u *Url) GenerateMessageUrl() string {
 	if u.Type == OfficialMessage {
-		return "https://m.okjike.com/officialMessages" + u.ID
+		return "https://m.okjike.com/officialMessages/" + u.ID
 	}
 	if u.Type == OriginalPost {
 		return "https://m.okjike.com/originalPosts/" + u.ID
