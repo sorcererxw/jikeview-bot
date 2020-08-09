@@ -8,6 +8,8 @@ import (
 	"os/exec"
 
 	"github.com/google/uuid"
+
+	"github.com/sorcererxw/jikeview-bot/util/log"
 )
 
 type (
@@ -207,7 +209,21 @@ type (
 )
 
 func DownloadAndFormatAudio(url string) (string, error) {
-	return "", nil
+	outputFile := os.TempDir() + uuid.New().String() + ".mp3"
+	cmd := exec.Command(
+		"ffmpeg",
+		"-i", url,
+		"-c", "copy",
+		"-acodec", "verbose",
+		"-loglevel", "panic",
+		outputFile,
+	)
+	log.Print(cmd.String())
+	_, err := cmd.CombinedOutput()
+	if err != nil {
+		return "", err
+	}
+	return outputFile, nil
 }
 
 func DownloadAndFormatVideo(url string) (string, error) {

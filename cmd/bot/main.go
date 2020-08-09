@@ -3,12 +3,14 @@ package main
 import (
 	"fmt"
 	"reflect"
+	"strings"
 
 	"github.com/getsentry/sentry-go"
 	tb "gopkg.in/tucnak/telebot.v2"
 	"mvdan.cc/xurls/v2"
 
 	"github.com/sorcererxw/jikeview-bot/conf"
+	"github.com/sorcererxw/jikeview-bot/service/cosmos"
 	"github.com/sorcererxw/jikeview-bot/service/jike"
 	"github.com/sorcererxw/jikeview-bot/service/jstore"
 	"github.com/sorcererxw/jikeview-bot/util/log"
@@ -43,6 +45,7 @@ func ConvertToSendable(url string) (interface{}, error) {
 	converters := []func(u string) (interface{}, error){
 		jike.TryToConvertTelegramPost,
 		jstore.TryToConvertToTelegramPost,
+		cosmos.TryToConvertToTelegramPost,
 	}
 	for _, cvt := range converters {
 		sendable, err := cvt(url)
@@ -97,7 +100,19 @@ func main() {
 	})
 
 	b.Handle("/help", func(m *tb.Message) {
-		SendSendable(b, m, "将<b>即刻/即士多</b>内的消息链接发送给我，我就能将其解析成 Telegram 消息回复给您。")
+		SendSendable(b, m, strings.Join([]string{
+			"将<b>即刻产品矩阵</b>内的外链发送给我，我就能将其解析成 Telegram 消息回复给您。",
+			"",
+			"目前支持:",
+			"1. 即刻动态链接",
+			"2. 即士多商品链接",
+			"3. 小宇宙播客单集链接",
+		}, "\n"))
+	})
+
+	b.Handle("/me", func(m *tb.Message) {
+		log.Print(m.Chat.ID)
+		log.Print(m.Sender.ID)
 	})
 
 	b.Handle(tb.OnText, func(m *tb.Message) {
