@@ -23,7 +23,7 @@ jobs:
       - name: Install runtime dependency
         run: |
           sudo apt update
-          sudp apt install -y ffmpeg
+          sudo apt install -y ffmpeg
 
       - name: Test & Build
         run: |
