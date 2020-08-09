@@ -21,6 +21,14 @@ var (
 	}
 )
 
+type PostType string
+
+const (
+	OriginalPost    PostType = "ORIGINAL_POST"
+	OfficialMessage          = "OFFICIAL_MESSAGE"
+	Repost                   = "REPOST"
+)
+
 type (
 	UrlContent struct {
 		OriginalUrl string `json:"originalUrl"` // http://t.cn/EtoRw3B
@@ -82,7 +90,7 @@ type (
 		Error   string `json:"error"`
 		Data    struct {
 			ID          string        `json:"id"`
-			Type        RawPostType   `json:"type"`
+			Type        PostType      `json:"type"`
 			Content     string        `json:"content"`
 			UrlsInText  []*UrlContent `json:"urlsInText"`
 			Status      string        `json:"status"`
@@ -96,6 +104,7 @@ type (
 			Audio       *Audio        `json:"audio"`
 			LinkInfo    *LinkInfo     `json:"linkInfo"`
 			User        *UserInfo     `json:"user"`
+			Target      *Post         `json:"target"`
 		} `json:"data"`
 	}
 
@@ -112,6 +121,8 @@ func GetPost(url *Url) (*Post, error) {
 		tp = "officialMessages"
 	case OriginalPost:
 		tp = "originalPosts"
+	case Repost:
+		tp = "reposts"
 	}
 	log.Infof("GetPost %+v", url)
 	req, err := http.NewRequest("GET", baseUrl+"/"+tp+"/get", nil)
@@ -153,7 +164,7 @@ func GetMediaMeta(url *Url) (*MediaMeta, error) {
 	}
 	qs := req.URL.Query()
 	qs.Add("id", url.ID)
-	qs.Add("type", url.Type.ToRawType().String())
+	qs.Add("type", string(url.Type))
 	req.URL.RawQuery = qs.Encode()
 	log.Println(req.URL.String())
 	res, err := httpClient.Do(req)
@@ -191,7 +202,7 @@ func (p *Post) GetVideo() *Video {
 
 func (p *Post) GetUrl() *Url {
 	return &Url{
-		Type: p.Data.Type.ToSimpleType(),
+		Type: p.Data.Type,
 		ID:   p.Data.ID,
 	}
 }
