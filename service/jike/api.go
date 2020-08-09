@@ -24,9 +24,9 @@ var (
 type PostType string
 
 const (
-	OriginalPost    PostType = "ORIGINAL_POST"
-	OfficialMessage          = "OFFICIAL_MESSAGE"
-	Repost                   = "REPOST"
+	TypeOriginalPost    PostType = "ORIGINAL_POST"
+	TypeOfficialMessage          = "OFFICIAL_MESSAGE"
+	TypeRepost                   = "REPOST"
 )
 
 type (
@@ -117,11 +117,11 @@ type (
 func GetPost(url *Url) (*Post, error) {
 	tp := ""
 	switch url.Type {
-	case OfficialMessage:
+	case TypeOfficialMessage:
 		tp = "officialMessages"
-	case OriginalPost:
+	case TypeOriginalPost:
 		tp = "originalPosts"
-	case Repost:
+	case TypeRepost:
 		tp = "reposts"
 	}
 	log.Infof("GetPost %+v", url)
