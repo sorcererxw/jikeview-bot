@@ -6,7 +6,7 @@ import (
 
 type (
 	Url struct {
-		Type SimplePostType
+		Type PostType
 		ID   string
 	}
 )
@@ -14,24 +14,28 @@ type (
 func ParseUrl(url string) *Url {
 	processors := []struct {
 		matcher  *regexp.Regexp
-		postType SimplePostType
+		postType PostType
 		idIndex  int
 	}{
 		{
 			regexp.MustCompile("^(https?://)?web\\.(jellow\\.club|okjike\\.com)/post-detail/([0-9a-z]+)/originalPost(\\?.*)?$"),
-			OriginalPost, 3,
+			TypeOriginalPost, 3,
 		},
 		{
 			regexp.MustCompile("^(https?://)?web\\.(jellow\\.club|okjike\\.com)/message-detail/([0-9a-z]+)/officialMessage(\\?.*)?$"),
-			OfficialMessage, 3,
+			TypeOfficialMessage, 3,
 		},
 		{
 			regexp.MustCompile("^(https?://)?(m|web)\\.(jellow\\.club|okjike\\.com)/originalPosts?/([0-9a-z]+)(\\?.*)?$"),
-			OriginalPost, 4,
+			TypeOriginalPost, 4,
+		},
+		{
+			regexp.MustCompile("^(https?://)?(m|web)\\.(jellow\\.club|okjike\\.com)/reposts?/([0-9a-z]+)(\\?.*)?$"),
+			TypeRepost, 4,
 		},
 		{
 			regexp.MustCompile("^(https?://)?(m|web)\\.(jellow\\.club|okjike\\.com)/officialMessages?/([0-9a-z]+)(\\?.*)?$"),
-			OfficialMessage, 4,
+			TypeOfficialMessage, 4,
 		},
 	}
 	for _, p := range processors {
@@ -46,11 +50,14 @@ func ParseUrl(url string) *Url {
 }
 
 func (u *Url) GenerateMessageUrl() string {
-	if u.Type == OfficialMessage {
+	if u.Type == TypeOfficialMessage {
 		return "https://m.okjike.com/officialMessages/" + u.ID
 	}
-	if u.Type == OriginalPost {
+	if u.Type == TypeOriginalPost {
 		return "https://m.okjike.com/originalPosts/" + u.ID
+	}
+	if u.Type == TypeRepost {
+		return "https://m.okjike.com/reposts/" + u.ID
 	}
 	return ""
 }
