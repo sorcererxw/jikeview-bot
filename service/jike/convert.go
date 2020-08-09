@@ -102,12 +102,11 @@ func (p *Post) ConvertToTelegramPost() (interface{}, error) {
 	// gif mode
 	if len(p.Data.Pictures) > 0 && p.Data.Pictures[0].Format == "gif" {
 		pic := p.Data.Pictures[0]
-		return &tb.Photo{
-			File:      tb.File{FileURL: pic.PicUrl},
-			Height:    pic.Height,
-			Width:     pic.Width,
-			Caption:   text,
-			ParseMode: tb.ModeHTML,
+		return &tb.Animation{
+			File:    tb.File{FileURL: pic.PicUrl},
+			Height:  pic.Height,
+			Width:   pic.Width,
+			Caption: text,
 		}, nil
 	}
 	// gallery mode
