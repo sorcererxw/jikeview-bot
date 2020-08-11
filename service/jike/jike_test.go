@@ -13,16 +13,9 @@ func TestGetPost(t *testing.T) {
 	url := "https://api.ruguoapp.com/originalPosts/5e9aa689ae00f00018fc586e"
 	parsedUrl := ParseUrl(url)
 	post, err := GetPost(parsedUrl)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if post.Data.ID != parsedUrl.ID {
-		t.Fail()
-	}
-	if post.Data.Type != RawOriginalPost {
-		t.Log(post.Data.Type)
-		t.Fail()
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, parsedUrl.ID, post.Data.ID)
+	assert.Equal(t, TypeOriginalPost, post.Data.Type)
 }
 
 func TestGetDeletedPost(t *testing.T) {

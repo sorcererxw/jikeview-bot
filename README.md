@@ -1,4 +1,4 @@
-<img align="right" src="https://github.com/sorcererxw/jikeview-bot/blob/master/assert/icon.png" width="200" />
+<img align="right" src="https://github.com/sorcererxw/jikeview-bot/blob/master/assert/icon.svg" width="200" />
 
 # Jikeview Bot
 

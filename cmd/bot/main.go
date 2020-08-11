@@ -117,6 +117,12 @@ func main() {
 
 	b.Handle(tb.OnText, func(m *tb.Message) {
 		urls := xurls.Strict().FindAllString(m.Text, -1)
+		if len(urls) == 0 {
+			b.Send(m.Sender, "未识别到有效链接", &tb.SendOptions{
+				ReplyTo: m,
+			})
+			return
+		}
 		for _, url := range urls {
 			sendable, err := ConvertToSendable(url)
 			if err != nil {
@@ -124,14 +130,21 @@ func main() {
 				continue
 			}
 			if sendable == nil {
+				b.Send(m.Sender, fmt.Sprintf("无法转换链接: %s", url), &tb.SendOptions{
+					ReplyTo: m,
+				})
 				continue
 			}
 			err = SendSendable(b, m, sendable)
 			switch err {
 			case tb.ErrTooLarge:
-				b.Send(m.Sender, fmt.Sprintf("%s 内文件过大，无法通过 Telegram 发送", url))
+				b.Send(m.Sender, fmt.Sprintf("%s 内文件过大，无法通过 Telegram 发送", url), &tb.SendOptions{
+					ReplyTo: m,
+				})
 			default:
-				b.Send(m.Sender, fmt.Sprintf("发送失败: %s", err.Error()))
+				b.Send(m.Sender, fmt.Sprintf("发送失败: %s", err.Error()), &tb.SendOptions{
+					ReplyTo: m,
+				})
 				log.Error(err)
 			}
 		}
