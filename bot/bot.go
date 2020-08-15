@@ -2,6 +2,7 @@ package bot
 
 import (
 	"fmt"
+	"log"
 	"reflect"
 
 	tb "gopkg.in/tucnak/telebot.v2"
@@ -10,7 +11,6 @@ import (
 	"github.com/sorcererxw/jikeview-bot/conf"
 	"github.com/sorcererxw/jikeview-bot/service/jike"
 	"github.com/sorcererxw/jikeview-bot/service/jstore"
-	"github.com/sorcererxw/jikeview-bot/util/log"
 )
 
 var Bot *tb.Bot
@@ -69,7 +69,7 @@ func init() {
 			if err.Error() == tb.ErrCouldNotUpdate.Error() {
 				return
 			} else {
-				log.Error(err)
+				log.Print(err)
 			}
 		},
 	})
@@ -113,17 +113,18 @@ func init() {
 				})
 				continue
 			}
-			err = SendSendable(m, sendable)
-			switch err {
-			case tb.ErrTooLarge:
-				Bot.Send(m.Sender, fmt.Sprintf("%s 内文件过大，无法通过 Telegram 发送", url), &tb.SendOptions{
-					ReplyTo: m,
-				})
-			default:
-				Bot.Send(m.Sender, fmt.Sprintf("发送失败: %s", err.Error()), &tb.SendOptions{
-					ReplyTo: m,
-				})
-				log.Error(err)
+			if err := SendSendable(m, sendable); err != nil {
+				switch err {
+				case tb.ErrTooLarge:
+					Bot.Send(m.Sender, fmt.Sprintf("%s 内文件过大，无法通过 Telegram 发送", url), &tb.SendOptions{
+						ReplyTo: m,
+					})
+				default:
+					Bot.Send(m.Sender, fmt.Sprintf("发送失败: %s", err.Error()), &tb.SendOptions{
+						ReplyTo: m,
+					})
+					log.Print(err)
+				}
 			}
 		}
 	})
