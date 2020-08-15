@@ -2,11 +2,10 @@ package jstore
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/pkg/errors"
 	tb "gopkg.in/tucnak/telebot.v2"
-
-	"github.com/sorcererxw/jikeview-bot/util/log"
 )
 
 const MaxCharacterLength = 4096 // max character count in one telegram message
