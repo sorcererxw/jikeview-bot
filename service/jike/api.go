@@ -4,10 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"time"
-
-	"github.com/sorcererxw/jikeview-bot/util/log"
 )
 
 const (
@@ -124,7 +123,7 @@ func GetPost(url *Url) (*Post, error) {
 	case TypeRepost:
 		tp = "reposts"
 	}
-	log.Infof("GetPost %+v", url)
+	log.Printf("GetPost %+v", url)
 	req, err := http.NewRequest("GET", baseUrl+"/"+tp+"/get", nil)
 	if err != nil {
 		return nil, err
@@ -132,14 +131,14 @@ func GetPost(url *Url) (*Post, error) {
 	qs := req.URL.Query()
 	qs.Add("id", url.ID)
 	req.URL.RawQuery = qs.Encode()
-	log.Info(req.URL.String())
+	log.Print(req.URL.String())
 	res, err := httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer func() {
 		if err := res.Body.Close(); err != nil {
-			log.Println(err)
+			log.Print(err)
 		}
 	}()
 
@@ -166,14 +165,14 @@ func GetMediaMeta(url *Url) (*MediaMeta, error) {
 	qs.Add("id", url.ID)
 	qs.Add("type", string(url.Type))
 	req.URL.RawQuery = qs.Encode()
-	log.Println(req.URL.String())
+	log.Print(req.URL.String())
 	res, err := httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer func() {
 		if err := res.Body.Close(); err != nil {
-			log.Println(err)
+			log.Print(err)
 		}
 	}()
 

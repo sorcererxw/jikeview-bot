@@ -1,9 +1,8 @@
 package conf
 
 import (
+	"log"
 	"os"
-
-	"github.com/sorcererxw/jikeview-bot/util/log"
 )
 
 var (

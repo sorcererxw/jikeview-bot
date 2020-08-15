@@ -1,11 +1,12 @@
 package main
 
 import (
+	"log"
+
 	"github.com/getsentry/sentry-go"
 
 	"github.com/sorcererxw/jikeview-bot/bot"
 	"github.com/sorcererxw/jikeview-bot/conf"
-	"github.com/sorcererxw/jikeview-bot/util/log"
 )
 
 func init() {
