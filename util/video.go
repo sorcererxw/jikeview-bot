@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path"
 
 	"github.com/google/uuid"
 )
@@ -211,7 +212,7 @@ func DownloadAndFormatAudio(url string) (string, error) {
 }
 
 func DownloadAndFormatVideo(url string) (string, error) {
-	outputFile := os.TempDir() + uuid.New().String() + ".mp4"
+	outputFile := path.Join(os.TempDir(), uuid.New().String()+".mp4")
 	cmd := exec.Command(
 		"ffmpeg",
 		"-i", url,

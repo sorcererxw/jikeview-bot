@@ -1,9 +1,19 @@
-FROM alpine
+FROM golang:1.14 as builder
+
+WORKDIR /app
+
+COPY go.* ./
+RUN go mod download
+
+COPY . ./
+RUN make test
+RUN make build
+
+FROM alpine:3
 
 RUN apk upgrade -U \
  && apk --no-cache add ca-certificates ffmpeg libva-intel-driver \
  && rm -rf /var/cache/*
 
-COPY ./bin ./
-ENTRYPOINT ["sh", "-c"]
+COPY --from=builder /app/bin ./
 CMD ["./bot"]

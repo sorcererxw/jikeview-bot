@@ -1,12 +1,13 @@
-GO := GO111MODULE=on go
-GO_BUILD := CGO_ENABLED=0 $(GO) build
+GO := CGO_ENABLED=0 GO111MODULE=on go
 
 test:
 	$(GO) test -p 1 ./...
 
+build: BUILD_OS ?= linux
+build: BUILD_FLAG ?= -ldflags '-extldflags "-static"'
 build:
 	for CMD in `ls ./cmd`; do \
-	  $(GO_BUILD) -o bin/$$CMD cmd/$$CMD/main.go; \
+	  GOOS=$(BUILD_OS) $(GO) build $(BUILD_FLAG) -o bin/$$CMD cmd/$$CMD/*.go; \
 	done
 
 clean:
