@@ -3,6 +3,7 @@ package conf
 import (
 	"log"
 	"os"
+	"regexp"
 )
 
 var (
@@ -10,7 +11,8 @@ var (
 	SentryDSN       = os.Getenv("SENTRY_DSN")
 	AppEnv          = os.Getenv("APP_ENV")
 	WebHookEndpoint = os.Getenv("WEB_HOOK_ENDPOINT")
-	WebHookPort     = os.Getenv("WEB_HOOK_PORT")
+	Port            = os.Getenv("PORT")
+	IsAWSLambda     = regexp.MustCompile("^AWS_Lambda_").MatchString(os.Getenv("AWS_EXECUTION_ENV"))
 )
 
 func init() {
@@ -18,5 +20,5 @@ func init() {
 	log.Printf("SentryDSN: %s", SentryDSN)
 	log.Printf("AppEnv: %s", AppEnv)
 	log.Printf("WebHookEndpoint: %s", WebHookEndpoint)
-	log.Printf("WebHookPort: %s", WebHookPort)
+	log.Printf("Port: %s", Port)
 }
