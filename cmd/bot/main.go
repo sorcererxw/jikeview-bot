@@ -48,13 +48,8 @@ func main() {
 			return
 		})
 	} else if conf.AppEnv == "production" {
-		url := path.Join(conf.WebHookEndpoint, "bot")
 		bot, err := tb.NewBot(tb.Settings{
 			Token: conf.BotToken,
-			Poller: &tb.Webhook{
-				Listen:   conf.Port,
-				Endpoint: &tb.WebhookEndpoint{PublicURL: url},
-			},
 			Reporter: func(err error) {
 				if err.Error() == tb.ErrCouldNotUpdate.Error() {
 					return
@@ -67,7 +62,13 @@ func main() {
 			log.Fatal(err)
 		}
 		registerHandler(bot)
-
+		url := path.Join(conf.WebHookEndpoint, "bot")
+		if err := bot.SetWebhook(&tb.Webhook{
+			Listen:   conf.Port,
+			Endpoint: &tb.WebhookEndpoint{PublicURL: url},
+		}); err != nil {
+			panic(err)
+		}
 		e := echo.New()
 		e.GET("/health", func(ctx echo.Context) error {
 			return ctx.NoContent(http.StatusOK)
@@ -81,6 +82,9 @@ func main() {
 			bot.ProcessUpdate(u)
 			return ctx.NoContent(http.StatusOK)
 		})
+		if err := e.Start(":" + conf.Port); err != nil {
+			panic(err)
+		}
 	} else {
 		bot, err := tb.NewBot(tb.Settings{
 			Token:  conf.BotToken,
