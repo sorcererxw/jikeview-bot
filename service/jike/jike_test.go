@@ -3,9 +3,8 @@ package jike
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	"github.com/sorcererxw/jikeview-bot/util"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetPost(t *testing.T) {
