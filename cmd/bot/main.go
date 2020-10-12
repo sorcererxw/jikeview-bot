@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"path"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -62,13 +61,6 @@ func main() {
 			log.Fatal(err)
 		}
 		registerHandler(bot)
-		url := path.Join(conf.WebHookEndpoint, "bot")
-		if err := bot.SetWebhook(&tb.Webhook{
-			Listen:   conf.Port,
-			Endpoint: &tb.WebhookEndpoint{PublicURL: url},
-		}); err != nil {
-			panic(err)
-		}
 		e := echo.New()
 		e.GET("/health", func(ctx echo.Context) error {
 			return ctx.NoContent(http.StatusOK)
