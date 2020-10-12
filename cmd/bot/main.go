@@ -3,10 +3,13 @@ package main
 import (
 	"encoding/json"
 	"log"
+	"net/http"
+	"path"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/getsentry/sentry-go"
+	"github.com/labstack/echo/v4"
 	tb "gopkg.in/tucnak/telebot.v2"
 
 	"github.com/sorcererxw/jikeview-bot/conf"
@@ -44,22 +47,14 @@ func main() {
 			}
 			return
 		})
-	} else {
-		var poller tb.Poller
-		var removeWebhook bool
-		if conf.AppEnv == "production" {
-			removeWebhook = false
-			poller = &tb.Webhook{
-				Listen:   conf.Port,
-				Endpoint: &tb.WebhookEndpoint{PublicURL: conf.WebHookEndpoint},
-			}
-		} else {
-			removeWebhook = true
-			poller = &tb.LongPoller{}
-		}
+	} else if conf.AppEnv == "production" {
+		url := path.Join(conf.WebHookEndpoint, "bot")
 		bot, err := tb.NewBot(tb.Settings{
-			Token:  conf.BotToken,
-			Poller: poller,
+			Token: conf.BotToken,
+			Poller: &tb.Webhook{
+				Listen:   conf.Port,
+				Endpoint: &tb.WebhookEndpoint{PublicURL: url},
+			},
 			Reporter: func(err error) {
 				if err.Error() == tb.ErrCouldNotUpdate.Error() {
 					return
@@ -71,11 +66,38 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		if removeWebhook {
-			err := bot.RemoveWebhook()
+		registerHandler(bot)
+
+		e := echo.New()
+		e.GET("/health", func(ctx echo.Context) error {
+			return ctx.NoContent(http.StatusOK)
+		})
+		e.POST("/bot", func(ctx echo.Context) error {
+			var u tb.Update
+			err := ctx.Bind(&u)
 			if err != nil {
-				log.Fatal(err)
+				return err
 			}
+			bot.ProcessUpdate(u)
+			return ctx.NoContent(http.StatusOK)
+		})
+	} else {
+		bot, err := tb.NewBot(tb.Settings{
+			Token:  conf.BotToken,
+			Poller: &tb.LongPoller{},
+			Reporter: func(err error) {
+				if err.Error() == tb.ErrCouldNotUpdate.Error() {
+					return
+				} else {
+					log.Print(err)
+				}
+			},
+		})
+		if err != nil {
+			log.Fatal(err)
+		}
+		if err := bot.RemoveWebhook(); err != nil {
+			log.Fatal(err)
 		}
 		registerHandler(bot)
 		bot.Start()
