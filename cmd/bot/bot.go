@@ -5,6 +5,7 @@ import (
 	"log"
 	"reflect"
 
+	"github.com/pkg/errors"
 	tb "gopkg.in/tucnak/telebot.v2"
 	"mvdan.cc/xurls/v2"
 
@@ -36,7 +37,7 @@ func ConvertToSendable(url string) (interface{}, error) {
 	for _, cvt := range converters {
 		sendable, err := cvt(url)
 		if err != nil {
-			return nil, err
+			return nil, errors.WithStack(err)
 		}
 		if sendable != nil {
 			return sendable, nil

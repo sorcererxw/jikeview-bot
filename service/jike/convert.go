@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/pkg/errors"
 	tb "gopkg.in/tucnak/telebot.v2"
 
 	"github.com/sorcererxw/jikeview-bot/util"
@@ -48,32 +49,39 @@ func (p *Post) ConvertToTelegramPost() (interface{}, error) {
 		video := p.GetVideo()
 		mediaMeta, err := GetMediaMeta(p.GetUrl())
 		if err != nil {
-			return nil, err
+			return nil, errors.WithStack(err)
 		}
 		filepath, err := util.DownloadAndFormatVideo(mediaMeta.Url)
 		if err != nil {
-			return nil, err
+			return nil, errors.WithStack(err)
 		}
 		info, err := util.GetVideoInfo(filepath)
 		if err != nil {
-			return nil, err
+			return nil, errors.WithStack(err)
 		}
 		file, err := os.Open(filepath)
 		if err != nil {
-			return nil, err
+			return nil, errors.WithStack(err)
 		}
 		duration, err := strconv.ParseFloat(info.Format.Duration, 64)
 		if err != nil {
-			return nil, err
+			return nil, errors.WithStack(err)
 		}
-		return &tb.Video{
-			File:      tb.File{FileReader: file},
-			Width:     info.Streams[0].Width,
-			Height:    info.Streams[0].Height,
-			Duration:  int(duration),
-			Caption:   text,
-			Thumbnail: &tb.Photo{File: tb.File{FileURL: video.ThumbnailUrl}},
-		}, nil
+		result := tb.Video{
+			File:     tb.File{FileReader: file},
+			Width:    info.Streams[0].Width,
+			Height:   info.Streams[0].Height,
+			Duration: int(duration),
+			Caption:  text,
+		}
+		if video.ThumbnailUrl != "" {
+			thumbnail, err := util.DownloadImage(video.ThumbnailUrl)
+			if err != nil {
+				return nil, errors.WithStack(err)
+			}
+			result.Thumbnail = &tb.Photo{File: tb.File{FileLocal: thumbnail}}
+		}
+		return &result, nil
 	}
 	// audio mode
 	if p.GetAudio() != nil {
@@ -145,11 +153,11 @@ func TryToConvertTelegramPost(url string) (interface{}, error) {
 	}
 	jikePost, err := GetPost(jikeUrl)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 	sendable, err := jikePost.ConvertToTelegramPost()
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 	return sendable, nil
 }

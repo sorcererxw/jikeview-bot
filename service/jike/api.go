@@ -2,11 +2,12 @@ package jike
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/pkg/errors"
 )
 
 const (
@@ -126,7 +127,7 @@ func GetPost(url *Url) (*Post, error) {
 	log.Printf("GetPost %+v", url)
 	req, err := http.NewRequest("GET", baseUrl+"/"+tp+"/get", nil)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 	qs := req.URL.Query()
 	qs.Add("id", url.ID)
@@ -134,24 +135,20 @@ func GetPost(url *Url) (*Post, error) {
 	log.Print(req.URL.String())
 	res, err := httpClient.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
-	defer func() {
-		if err := res.Body.Close(); err != nil {
-			log.Print(err)
-		}
-	}()
+	defer res.Body.Close()
 
 	bodyBytes, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 	var resp Post
 	if err = json.Unmarshal(bodyBytes, &resp); err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 	if resp.Success != nil && *resp.Success == false {
-		return nil, fmt.Errorf(resp.Error)
+		return nil, errors.Errorf(resp.Error)
 	}
 	return &resp, nil
 }

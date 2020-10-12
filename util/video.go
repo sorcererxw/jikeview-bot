@@ -2,13 +2,17 @@ package util
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
 	"os"
 	"os/exec"
 	"path"
 
 	"github.com/google/uuid"
+	"github.com/pkg/errors"
 )
 
 type (
@@ -223,7 +227,7 @@ func DownloadAndFormatVideo(url string) (string, error) {
 	)
 	_, err := cmd.CombinedOutput()
 	if err != nil {
-		return "", err
+		return "", errors.WithStack(err)
 	}
 	return outputFile, nil
 }
@@ -242,16 +246,31 @@ func GetVideoInfo(file string) (*ProbeData, error) {
 
 	err := cmd.Run()
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
-
 	if stdErr.String() != "" {
 		return nil, fmt.Errorf("ffprobe err: %s", stdErr.String())
 	}
 	var data ProbeData
 	err = json.Unmarshal(outputBuf.Bytes(), &data)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 	return &data, nil
+}
+
+func DownloadImage(url string) (string, error) {
+	hash := fmt.Sprintf("%x", sha256.Sum256([]byte(url)))
+	res, err := http.Get(url)
+	if err != nil {
+		return "", errors.WithStack(err)
+	}
+	defer res.Body.Close()
+	filepath := path.Join(os.TempDir(), hash)
+	file, err := os.OpenFile(filepath, os.O_CREATE|os.O_WRONLY, os.ModePerm)
+	defer file.Close()
+	if _, err := io.Copy(file, res.Body); err != nil {
+		return "", errors.WithStack(err)
+	}
+	return filepath, nil
 }
