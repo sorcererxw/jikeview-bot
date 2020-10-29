@@ -41,10 +41,10 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
-          password: ${{ secret.CR_PAT }}
+          password: ${{ secrets.CR_PAT }}
 
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
           tags: ${{ env.GITHUB_REF_NAME_SLUG }}-${{ env.GITHUB_SHA_SHORT }}
-          push: ${{ github.event_name != 'pull_request' }}
+          push: true
