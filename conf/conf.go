@@ -3,7 +3,6 @@ package conf
 import (
 	"log"
 	"os"
-	"regexp"
 )
 
 var (
@@ -12,7 +11,6 @@ var (
 	AppEnv          = os.Getenv("APP_ENV")
 	WebHookEndpoint = os.Getenv("WEB_HOOK_ENDPOINT")
 	Port            = os.Getenv("PORT")
-	IsAWSLambda     = regexp.MustCompile("^AWS_Lambda_").MatchString(os.Getenv("AWS_EXECUTION_ENV"))
 )
 
 func init() {
