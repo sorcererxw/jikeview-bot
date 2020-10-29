@@ -15,10 +15,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Set up Go 1.14
+      - name: Set up Go
         uses: actions/setup-go@v1
         with:
-          go-version: 1.14
+          go-version: 1.15
 
       - name: Install runtime dependency
         run: |
@@ -41,7 +41,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
-          password: ${{ github.token }} # - must be in GitHub Secrets!
+          password: ${{ secret.CR_PAT }}
 
       - name: Build and push
         uses: docker/build-push-action@v2

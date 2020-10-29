@@ -1,6 +1,6 @@
 module github.com/sorcererxw/jikeview-bot
 
-go 1.14
+go 1.15
 
 require (
 	github.com/getsentry/sentry-go v0.7.0
