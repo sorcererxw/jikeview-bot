@@ -147,7 +147,7 @@ func (p *Post) ConvertToTelegramPost() (interface{}, error) {
 }
 
 func TryToConvertTelegramPost(url string) (interface{}, error) {
-	jikeUrl := ParseUrl(url)
+	jikeUrl := ParseURL(url)
 	if jikeUrl == nil {
 		return nil, nil
 	}

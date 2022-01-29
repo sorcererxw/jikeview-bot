@@ -1,11 +1,9 @@
-package jstore_test
+package jstore
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
-	"github.com/sorcererxw/jikeview-bot/service/jstore"
 )
 
 func TestParseUrl(t *testing.T) {
@@ -17,6 +15,6 @@ func TestParseUrl(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		assert.Equal(t, jstore.ParseUrl(c[0]).ID, c[1])
+		assert.Equal(t, ParseURL(c[0]).ID, c[1])
 	}
 }

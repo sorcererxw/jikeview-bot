@@ -268,6 +268,9 @@ func DownloadImage(url string) (string, error) {
 	defer res.Body.Close()
 	filepath := path.Join(os.TempDir(), hash)
 	file, err := os.OpenFile(filepath, os.O_CREATE|os.O_WRONLY, os.ModePerm)
+	if err != nil {
+		return "", errors.WithStack(err)
+	}
 	defer file.Close()
 	if _, err := io.Copy(file, res.Body); err != nil {
 		return "", errors.WithStack(err)

@@ -6,21 +6,21 @@ import (
 )
 
 type (
-	Url struct {
+	URL struct {
 		Type string
 		ID   string
 	}
 )
 
-// ParseUrl parses jstore urls
-func ParseUrl(url string) *Url {
-	re := regexp.MustCompile("^(https?://)?(web|m)\\.jstore\\.site/product/([0-9a-z]+)/?(\\?.*)?$")
+// ParseURL parses jstore urls
+func ParseURL(url string) *URL {
+	re := regexp.MustCompile(`^(https?://)?(web|m)\.jstore\.site/product/([0-9a-z]+)/?(\?.*)?$`)
 	if re.MatchString(url) {
-		return &Url{"product", re.FindStringSubmatch(url)[3]}
+		return &URL{"product", re.FindStringSubmatch(url)[3]}
 	}
 	return nil
 }
 
-func (p Product) generateUrl() string {
+func (p Product) generateURL() string {
 	return fmt.Sprintf("https://m.jstore.site/product/%s", p.ID)
 }

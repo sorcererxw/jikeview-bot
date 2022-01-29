@@ -38,7 +38,7 @@ func (p *Product) ConvertToTelegramPost() (interface{}, error) {
 		}
 	}
 
-	text += fmt.Sprintf("\n<a href='%s'>查看全文</a>", p.generateUrl())
+	text += fmt.Sprintf("\n<a href='%s'>查看全文</a>", p.generateURL())
 
 	if len(p.Pictures) > 0 {
 		var gallery []tb.InputMedia
@@ -67,7 +67,7 @@ func (p *Product) ConvertToTelegramPost() (interface{}, error) {
 }
 
 func TryToConvertToTelegramPost(url string) (interface{}, error) {
-	u := ParseUrl(url)
+	u := ParseURL(url)
 	if u == nil {
 		return nil, nil
 	}

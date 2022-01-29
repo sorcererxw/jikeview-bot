@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	baseUrl = "https://api.ruguoapp.com/1.0"
+	baseURL = "https://api.ruguoapp.com/1.0"
 )
 
 var (
@@ -114,7 +114,7 @@ type (
 	}
 )
 
-func GetPost(url *Url) (*Post, error) {
+func GetPost(url *URL) (*Post, error) {
 	tp := ""
 	switch url.Type {
 	case TypeOfficialMessage:
@@ -125,7 +125,7 @@ func GetPost(url *Url) (*Post, error) {
 		tp = "reposts"
 	}
 	log.Printf("GetPost %+v", url)
-	req, err := http.NewRequest("GET", baseUrl+"/"+tp+"/get", nil)
+	req, err := http.NewRequest("GET", baseURL+"/"+tp+"/get", nil)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -153,8 +153,8 @@ func GetPost(url *Url) (*Post, error) {
 	return &resp, nil
 }
 
-func GetMediaMeta(url *Url) (*MediaMeta, error) {
-	req, err := http.NewRequest("GET", baseUrl+"/mediaMeta/play", nil)
+func GetMediaMeta(url *URL) (*MediaMeta, error) {
+	req, err := http.NewRequest("GET", baseURL+"/mediaMeta/play", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -196,8 +196,8 @@ func (p *Post) GetVideo() *Video {
 	return nil
 }
 
-func (p *Post) GetUrl() *Url {
-	return &Url{
+func (p *Post) GetUrl() *URL {
+	return &URL{
 		Type: p.Data.Type,
 		ID:   p.Data.ID,
 	}
